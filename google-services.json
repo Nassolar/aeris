@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "911233719309",
+    "project_id": "aeris-citizen-app-16265",
+    "storage_bucket": "aeris-citizen-app-16265.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911233719309:android:0a512101eccf46e5afc944",
+        "android_client_info": {
+          "package_name": "com.aeris.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcM2EhLnV5PaMYh2e1Z3Si-zMX4mA2Ic0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911233719309:android:0a512101eccf46e5afc944",
+        "android_client_info": {
+          "package_name": "com.aeris.app.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcM2EhLnV5PaMYh2e1Z3Si-zMX4mA2Ic0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911233719309:android:3cb6d4b10af3c639afc944",
+        "android_client_info": {
+          "package_name": "com.aeris.responder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcM2EhLnV5PaMYh2e1Z3Si-zMX4mA2Ic0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── service_requests ─────────────────────────────────────────────────────
+    // Citizens create and read their own requests.
+    // LGU portal writes status updates via Firebase Admin SDK (bypasses rules).
+    // Citizens CANNOT write _supabase_sync — that sentinel is owned by the bridge.
+    match /service_requests/{requestId} {
+      allow read: if request.auth != null
+        && resource.data.citizenUid == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.resource.data.citizenUid == request.auth.uid
+        && !('_supabase_sync' in request.resource.data);
+
+      // Citizens may update their own documents (e.g. add documents, cancel)
+      // but they cannot write the _supabase_sync sentinel field.
+      allow update: if request.auth != null
+        && resource.data.citizenUid == request.auth.uid
+        && !('_supabase_sync' in request.resource.data);
+
+      allow delete: if false; // requests are never deleted
+    }
+
+    // ── service_request_counters ──────────────────────────────────────────────
+    // Firestore transaction counters for sequential reference number generation.
+    // Any authenticated citizen may participate in the atomic increment.
+    // Counter documents contain no PII — only { seq, templateKey, lguPsgcCode }.
+    match /service_request_counters/{counterId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ── users ─────────────────────────────────────────────────────────────────
+    // Public AERIS profile. Citizens read/write their own profile.
+    // The citizen bridge Cloud Function reads displayName and barangay from here.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── citizens (KYC subcollection) ──────────────────────────────────────────
+    // KYC data is managed by Cloud Functions only. No client reads or writes.
+    match /citizens/{uid} {
+      allow read, write: if false;
+
+      match /kyc/{doc} {
+        allow read, write: if false;
+      }
+    }
+
+    // ── reports ───────────────────────────────────────────────────────────────
+    match /reports/{reportId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null && resource.data.reporterUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ── Default deny ─────────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

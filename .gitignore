@@ -39,3 +39,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# environment files with sensitive data
+.env
+
+# seed scripts — service account keys must never be committed
+scripts/.service-account.json
+serviceAccountKey.json
+**/serviceAccountKey.json
+.gitnexus

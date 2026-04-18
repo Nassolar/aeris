@@ -1,0 +1,63 @@
+AERIS Project Structure - After Integration
+============================================
+
+aeris/
+├── .env                                    # Firebase config (gitignored)
+├── .env.local                              # Local environment override
+├── package.json                            # Dependencies (entry: expo-router/entry)
+├── tsconfig.json                           # TypeScript strict config
+├── app.json                                # Expo configuration
+├── firebaseConfig.ts                       # Firebase initialization
+│
+├── types/                                  # ✨ NEW
+│   └── index.ts                            # Type definitions (ServiceCategory, ServiceProvider, etc.)
+│
+├── constants/
+│   ├── theme.ts                            # Original theme system
+│   ├── Colors.ts                           # ✨ NEW - Dark theme colors for UI
+│   └── testCredentials.ts                  # Test phone/OTP/SHA keys
+│
+├── components/                             # ✨ NEW - Reusable UI components
+│   ├── ServiceGrid.tsx                     # Service categories grid
+│   ├── NearbyMap.tsx                       # Google Maps integration
+│   └── ProCard.tsx                         # Service provider card
+│
+├── store/
+│   └── authStore.ts                        # Zustand auth state
+│
+├── app/
+│   ├── _layout.tsx                         # Root layout (no conditionals)
+│   │
+│   ├── (auth)/
+│   │   ├── _layout.tsx
+│   │   ├── login.tsx                       # Phone auth login
+│   │   └── verify-otp.tsx                  # OTP verification (uses testCredentials)
+│   │
+│   └── (tabs)/
+│       ├── _layout.tsx                     # ✏️ UPDATED - Dark tab bar
+│       ├── index.tsx                       # ✏️ UPDATED - Component-based home screen
+│       ├── bookings.tsx                    # Bookings placeholder
+│       ├── inbox.tsx                       # Inbox placeholder
+│       ├── profile.tsx                     # Profile with logout
+│       └── emergency.tsx                   # Emergency services
+│
+└── [Documentation]
+    ├── SETUP_COMPLETE.md                   # Setup verification
+    ├── STATUS_REPORT.md                    # Full status report
+    └── INTEGRATION_SUMMARY.md              # ✨ Integration details
+
+Legend:
+✨ NEW      - Newly created files/folders
+✏️ UPDATED  - Modified existing files
+
+The canonical AERIS Core flow is:
+AERIS (Citizen App) >> aeris-web (Web Portal / Supervisor Console) >> COMMANDER AI (Orchestration layer) >> DISPATCH AI (Responder matching) >> aeris-responder (Responder App)
+That's accurate. But the full picture includes a few more actors in the chain:
+
+Gemini Vision runs in parallel during the early stage -- when the citizen uploads evidence, it does AI pre-screening (license plate detection, person count, injury description, NSFW filtering, category suggestions) before or alongside COMMANDER AI processing.
+COMMANDER AI is the orchestration layer (Firebase Cloud Function). It coordinates DISPATCH AI but is also the layer that KAIROS can spawn tasks through when KAIROS is active (KAIROS >> COMMANDER relationship is documented in the agent architecture).
+DISPATCH AI is the server-side Cloud Function that does automated classification, routing, and responder matching within a sub-3-second window. It picks the nearest responder by travel time and notifies nearby stations.
+The responder then goes through the standard status flow: Assigned >> En Route >> Arrived >> Closed (with real-time Firestore .onSnapshot() pushing status back to the citizen).
+
+There's also the Civic AI / AERIS Assistant on the citizen side providing contextual help, and the Responder Copilot giving on-scene playbooks and checklists -- but those are assistive layers, not part of the core dispatch chain.
+One thing to flag: the Inter-Agent Comms Spec uses "Conductor" for the Claude Code development orchestrator, which is a completely separate concept from COMMANDER AI (the in-app production orchestrator). Those two should never be confused.

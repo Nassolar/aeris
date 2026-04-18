@@ -1,0 +1,58 @@
+// For DEV MODE authentication, we'll use email/password with a generated email
+// This creates a real Firebase Auth user that the auth listener can detect
+
+// In the handleVerifyOTP function, replace the DEV MODE section with:
+
+// DEVELOPMENT MODE: Test OTP for development without SMS
+if (otpCode === getTestOTP() && !verificationId) {
+  console.log('🔧 DEV MODE: Using test credentials');
+
+  // Create a test email from phone number
+  const testEmail = `${phoneNumber?.replace(/\D/g, '')}@aeris.test`;
+  const testPassword = 'TestPassword123!'; // In production, use secure password
+
+  try {
+    // Try to sign in with existing test account
+    const userCredential = await signInWithEmailAndPassword(auth, testEmail, testPassword);
+    const user = userCredential.user;
+    console.log('✅ Signed in with existing test account:', user.uid);
+
+    // Update user document
+    const userRef = doc(db, 'users', user.uid);
+    await setDoc(userRef, {
+      phoneNumber: phoneNumber,
+      email: testEmail,
+      updatedAt: serverTimestamp(),
+      lastLoginAt: serverTimestamp(),
+    }, { merge: true });
+
+  } catch (signInError: any) {
+    // If account doesn't exist, create it
+    if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+      console.log('📝 Creating new test account...');
+      const userCredential = await createUserWithEmailAndPassword(auth, testEmail, testPassword);
+      const user = userCredential.user;
+
+      // Create user document in Firestore
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        uid: user.uid,
+        phoneNumber: phoneNumber,
+        email: testEmail,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        displayName: null,
+        photoURL: null,
+        role: 'customer',
+        isTest: true, // Mark as test account
+      });
+      console.log('✅ New test user created:', user.uid);
+    } else {
+      throw signInError;
+    }
+  }
+
+  // Auth listener will handle navigation
+  setLoading(false);
+  return;
+}

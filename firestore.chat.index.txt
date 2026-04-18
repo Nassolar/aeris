@@ -1,0 +1,23 @@
+# Firestore composite index required for Inbox chat list
+# Firebase Console → Firestore → Indexes → Composite → Create index
+
+Collection: chats
+Fields:
+  - participants (Array-contains)
+  - lastMessageTime (Descending)
+Query scope: Collection
+
+Or create via Firebase CLI / firebase.json:
+  "indexes": [
+    {
+      "collectionGroup": "chats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "participants", "order": "ASCENDING" },
+        { "fieldPath": "lastMessageTime", "order": "DESCENDING" }
+      ]
+    }
+  ]
+
+Note: For array-contains + orderBy, use "participants" in the index.
+If the link appears in the Firestore error when loading Inbox, click it to auto-create the index.
