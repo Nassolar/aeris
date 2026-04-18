@@ -48,3 +48,14 @@ scripts/.service-account.json
 serviceAccountKey.json
 **/serviceAccountKey.json
 .gitnexus
+
+# Service account keys and credentials — never commit
+aeris-cli-ops.json
+**/aeris-cli-ops.json
+*-service-account*.json
+**/serviceAccountKey.json
+**/firebase-adminsdk*.json
+
+# Local secret directories — never commit
+/_secrets/
+/secrets/
