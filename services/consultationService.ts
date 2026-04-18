@@ -58,7 +58,7 @@ export async function callCreateConsultation(payload: {
   type: ConsultationType;
   documentUrls?: string[];
 }): Promise<{ consultationId: string; aiCategory: string; aiSummary: string; status: string }> {
-  const fn = functions.httpsCallable('createConsultation');
+  const fn = functions.httpsCallable('ibp_createConsultation');
   const result = await fn(payload);
   return result.data as { consultationId: string; aiCategory: string; aiSummary: string; status: string };
 }
@@ -67,7 +67,7 @@ export async function callCancelConsultation(
   consultationId: string,
   reason?: string,
 ): Promise<void> {
-  const fn = functions.httpsCallable('cancelConsultation');
+  const fn = functions.httpsCallable('ibp_cancelConsultation');
   await fn({ consultationId, reason });
 }
 
@@ -76,7 +76,7 @@ export async function callRateConsultation(
   rating: number,
   comment?: string,
 ): Promise<void> {
-  const fn = functions.httpsCallable('rateConsultation');
+  const fn = functions.httpsCallable('ibp_rateConsultation');
   await fn({ consultationId, rating, comment });
 }
 
