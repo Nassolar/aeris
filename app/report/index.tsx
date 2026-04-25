@@ -8,6 +8,7 @@ import { Video, ResizeMode } from 'expo-av';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { ReportService, CapturedVideoData } from '../../services/reportService';
 import { queueRequest } from '../../services/offlineQueueService';
+import type { IntentHint } from '../../constants/intentHintMap';
 import AnonymousWaiverModal from '../../components/AnonymousWaiverModal';
 
 interface CapturedImage {
@@ -245,7 +246,7 @@ export default function ReportWizard() {
     const newReportId = generateReportID();
     setReportId(newReportId);
     // Queue always succeeds — uploads immediately if online, retries silently when offline
-    await queueRequest({ reportId: newReportId, category, description, additionalInfo, images, videos, location, isAnonymous });
+    await queueRequest({ reportId: newReportId, category, description, additionalInfo, images, videos, location, isAnonymous, intentHint: category as IntentHint, submissionMode: 'button_assisted' });
     setLoading(false);
     setStep(4);
   };

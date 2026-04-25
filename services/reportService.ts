@@ -3,6 +3,7 @@ import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import * as Location from 'expo-location';
 import { Platform } from 'react-native';
+import { INTENT_HINT_MAP, IntentHint } from '../constants/intentHintMap';
 
 function detectSocialMediaDownload(uri: string): boolean {
   const socialPatterns = [
@@ -54,6 +55,8 @@ export interface ReportData {
     longitudeDelta?: number;
   };
   isAnonymous?: boolean;
+  intentHint?: IntentHint | null;
+  submissionMode?: 'button_assisted' | 'text_only';
 }
 
 export const ReportService = {
@@ -207,6 +210,12 @@ export const ReportService = {
       }
 
       // 4. CONSTRUCT PAYLOAD
+      const intentHint = data.intentHint ?? null;
+      const mapped = intentHint && intentHint in INTENT_HINT_MAP ? INTENT_HINT_MAP[intentHint] : null;
+      const resolvedCategory = mapped?.category ?? data.category;
+      const resolvedTrack = mapped?.track ?? null;
+      const submissionMode = data.submissionMode ?? (mapped ? 'button_assisted' : 'text_only');
+
       const displayName = data.isAnonymous ? "Anonymous" : (user.displayName || "Anonymous Citizen");
       const reportPayload = {
         reportId: data.reportId,
@@ -214,9 +223,15 @@ export const ReportService = {
         userId: data.isAnonymous ? null : user.uid,
         userName: displayName,
         reporterName: displayName,
-        category: data.category,
+        category: resolvedCategory,
         description: data.description,
+        rawInput: data.description,
         additionalInfo: data.additionalInfo || "",
+        intentHint: intentHint,
+        submissionMode,
+        ...(resolvedTrack ? { track: resolvedTrack } : {}),
+        classificationComplete: false,
+        routingStatus: 'pending',
         imageUrls: imageUrls,
         videoUrls: videoUrls,
         status: 'pending',
