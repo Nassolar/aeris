@@ -184,7 +184,7 @@ export default function ServiceRequestScreen() {
             <Text style={styles.sectionTitle}>💬 Describe the Issue <Text style={styles.optionalLabel}>(Optional)</Text></Text>
             <TextInput
               style={styles.descInput}
-              placeholder={`e.g. "Kitchen faucet has been leaking for 2 days, water drips from the base"`}
+              placeholder={`e.g. "Briefly describe what you need help with and any relevant details"`}
               placeholderTextColor={theme.colors.textLight}
               multiline
               maxLength={500}
